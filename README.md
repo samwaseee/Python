@@ -194,3 +194,194 @@ def greet(name: str) -> str:
 - Classes with dynamic attributes
 - "Dunder" methods for operator and behavior customization
 - More flexible but less control over memory layout
+
+
+#
+# Python Collections Compared: List vs Set vs Tuple
+
+All three are built-in collection types in Python, but they have different characteristics that make them suitable for different purposes. Let's compare them across multiple dimensions:
+
+## Core Properties
+
+| Property | List | Set | Tuple |
+|----------|------|-----|-------|
+| **Mutability** | Mutable | Mutable | Immutable |
+| **Order** | Ordered | Unordered* | Ordered |
+| **Duplicates** | Allowed | Not allowed | Allowed |
+| **Indexing** | Yes | No | Yes |
+| **Syntax** | `[1, 2, 3]` | `{1, 2, 3}` | `(1, 2, 3)` |
+| **Empty** | `[]` | `set()` | `()` |
+
+*Note: Sets maintain insertion order in Python 3.7+ as an implementation detail, but you shouldn't rely on this.
+
+## Time Complexity
+
+| Operation | List | Set | Tuple |
+|-----------|------|-----|-------|
+| **Access by index** | O(1) | N/A | O(1) |
+| **Search by value** | O(n) | O(1) | O(n) |
+| **Insert/Delete at end** | O(1)* | O(1) | N/A |
+| **Insert/Delete elsewhere** | O(n) | O(1) | N/A |
+| **Contains check (`in`)** | O(n) | O(1) | O(n) |
+
+*Amortized time complexity
+
+## Memory Usage
+
+In general: Tuples < Lists < Sets (for the same data)
+
+Sets have higher overhead due to their hash table implementation, while tuples are slightly more memory-efficient than lists.
+
+## Common Methods and Operations
+
+### List
+```python
+my_list = [1, 2, 3]
+my_list.append(4)       # Add item
+my_list.extend([5, 6])  # Add multiple items
+my_list.insert(0, 0)    # Insert at position
+my_list.remove(3)       # Remove by value
+my_list.pop()           # Remove and return last item
+my_list.sort()          # Sort in-place
+my_list.reverse()       # Reverse in-place
+```
+
+### Set
+```python
+my_set = {1, 2, 3}
+my_set.add(4)           # Add item
+my_set.update([5, 6])   # Add multiple items
+my_set.remove(3)        # Remove (raises KeyError if not found)
+my_set.discard(3)       # Remove (no error if not found)
+my_set.pop()            # Remove and return an arbitrary element
+
+# Set operations
+other_set = {3, 4, 5}
+union = my_set | other_set        # Union
+intersection = my_set & other_set # Intersection
+difference = my_set - other_set   # Difference
+sym_diff = my_set ^ other_set     # Symmetric difference
+```
+
+### Tuple
+```python
+my_tuple = (1, 2, 3)
+# No methods to modify the tuple (immutable)
+count = my_tuple.count(2)   # Count occurrences
+index = my_tuple.index(3)   # Find position
+
+# Common operations
+length = len(my_tuple)
+concatenated = my_tuple + (4, 5)  # Creates new tuple
+repeated = my_tuple * 2           # Creates new tuple
+```
+
+## When to Use Each Type
+
+### Use Lists When:
+- You need a mutable, ordered sequence
+- You need to frequently modify the collection
+- Order matters and indexing is important
+- You need to store duplicate items
+- You want to represent a sequence of related items that can change
+
+### Use Sets When:
+- You need to ensure uniqueness of elements
+- You need to perform set operations (union, intersection, etc.)
+- Fast membership testing is important
+- Order doesn't matter
+- You want to eliminate duplicates from another collection
+
+### Use Tuples When:
+- You need an immutable sequence (that cannot be changed)
+- You want to use the collection as a dictionary key or set element
+- You want to represent fixed data like coordinates (x, y)
+- You want to ensure data integrity (prevent modification)
+- You want a slightly more memory-efficient collection than a list
+- You're unpacking multiple return values from a function
+
+## Practical Examples
+
+### List Example - Task Management
+```python
+# A to-do list where order and modifications matter
+tasks = ["Write report", "Email client", "Prepare presentation"]
+tasks.append("Call team meeting")
+tasks.remove("Email client")  # Task completed
+tasks.insert(0, "Check emails")  # Prioritize task
+```
+
+### Set Example - Unique Collection
+```python
+# Track unique user IDs visiting a webpage
+visitors = set()
+def track_visit(user_id):
+    visitors.add(user_id)
+    return len(visitors)  # Total unique visitors
+
+# Find common elements
+python_users = {"Alice", "Bob", "Charlie"}
+java_users = {"Bob", "Dave", "Eve"}
+users_who_know_both = python_users & java_users  # {"Bob"}
+```
+
+### Tuple Example - Fixed Data Structure
+```python
+# Geographic coordinates (shouldn't change)
+location = (40.7128, -74.0060)  # New York City
+
+# Function returning multiple values
+def get_dimensions():
+    return (1920, 1080)  # width, height
+
+# Tuple unpacking
+width, height = get_dimensions()
+
+# Using tuples as dictionary keys (lists can't be used as keys)
+distances = {
+    (0, 0): 0,
+    (1, 0): 1,
+    (0, 1): 1
+}
+```
+
+## Conversion Between Types
+
+```python
+# Converting between types
+my_list = [1, 2, 2, 3, 3, 3]
+my_set = set(my_list)          # {1, 2, 3} (duplicates removed)
+my_tuple = tuple(my_set)       # (1, 2, 3)
+back_to_list = list(my_tuple)  # [1, 2, 3]
+```
+
+## Performance Comparison for Common Operations
+
+```python
+import time
+
+# Setup
+list_collection = list(range(10000))
+set_collection = set(range(10000))
+tuple_collection = tuple(range(10000))
+
+# Membership testing
+def test_membership(collection, iterations=1000):
+    start = time.time()
+    for i in range(iterations):
+        _ = 9999 in collection
+    return time.time() - start
+
+print(f"List membership: {test_membership(list_collection):.6f} seconds")
+print(f"Set membership: {test_membership(set_collection):.6f} seconds")
+print(f"Tuple membership: {test_membership(tuple_collection):.6f} seconds")
+```
+
+## Best Practices
+
+1. **Use the right collection for the job** - match the data structure to your needs
+2. **For constants, use tuples** - signal that values shouldn't change
+3. **For sets of unique items, use sets** - automatic duplicate prevention
+4. **For sequences that need modification, use lists** - most flexible option
+5. **Use built-in conversions when needed** - `list()`, `set()`, `tuple()`
+

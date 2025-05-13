@@ -69,7 +69,7 @@ class Student(Person):
 
 
 x = Student("Mike", "Olsen")
-print(x.firstname) # Mike
+# print(x.firstname) # Mike
 
 class Student(Person):
     def __init__(self, fname, lname):

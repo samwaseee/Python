@@ -1,12 +1,27 @@
-# Banker's rounding to n significant figures
 def round_banker(num, n):
-    from decimal import Decimal, ROUND_HALF_EVEN
     if num == 0:
         return 0
-    d = Decimal(str(num))
-    shift = n - d.adjusted() - 1
-    rounded = d.scaleb(shift).quantize(Decimal('1'), rounding=ROUND_HALF_EVEN).scaleb(-shift)
-    return float(rounded)
+    import math
+
+    sign = -1 if num < 0 else 1
+    num = abs(num)
+    order = int(math.floor(math.log10(num)))
+    factor = 10 ** (n - 1 - order)
+    shifted = num * factor
+
+    # Banker's rounding (round half to even)
+    int_part = int(shifted)
+    frac_part = shifted - int_part
+
+    if frac_part > 0.5:
+        int_part += 1
+    elif frac_part == 0.5:
+        if int_part % 2 != 0:
+            int_part += 1
+    # else: int_part stays the same
+
+    rounded = int_part / factor
+    return sign * rounded
 
 num = float(input("Enter a number: "))
 n = int(input("Enter significant figures: "))

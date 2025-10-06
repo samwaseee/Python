@@ -1,4 +1,3 @@
-# Significant digits counter
 def count_significant_digits(num_str):
     num_str = num_str.strip().lstrip('0')
     if '.' in num_str:
